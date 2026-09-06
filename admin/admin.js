@@ -1,5 +1,10 @@
+// Validación de Seguridad
+// if (sessionStorage.getItem('vf_logged_in') !== 'true' || sessionStorage.getItem('vf_role') !== 'admin') {
+   //  window.location.href = '../index.html';
+// }
+
 /* ==========================================================================
-   Lógica del Panel de Administración - V2 (Scrap & Mayoreo)
+   Lógica del Panel de Administración - V2 (Scrap, Mayoreo & Vista Previa)
    ========================================================================== */
 
 const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwy7qdPM56p_NT0VRM-f9QMGFD_9jxgCzOIzYcUKrFsOdDOd-ABwEGUjFvjpTRDHgCfSQ/exec";
@@ -33,6 +38,25 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================================================
 // 2. UTILIDADES GENERALES
 // ==========================================================================
+
+// Funciones para el Modal de Vista Previa de Imagen
+window.abrirImagen = function(e, url) {
+    if(e) { e.preventDefault(); e.stopPropagation(); }
+    if(!url || url.length < 10 || url.startsWith('#')) return; 
+    const modal = document.getElementById('modal-imagen');
+    const img = document.getElementById('img-ampliada');
+    img.src = url;
+    modal.classList.remove('hidden');
+    setTimeout(() => { modal.classList.remove('opacity-0'); img.classList.remove('scale-95'); }, 10);
+}
+
+window.cerrarImagen = function() {
+    const modal = document.getElementById('modal-imagen');
+    const img = document.getElementById('img-ampliada');
+    modal.classList.add('opacity-0'); img.classList.add('scale-95');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
 function mostrarNotificacion(mensaje, tipo = 'info') {
     const container = document.getElementById('notificaciones-container');
     const toast = document.createElement('div');
@@ -527,7 +551,7 @@ async function actualizarEstatusPedido(idPedido, nuevoEstado) {
 }
 
 // ==========================================================================
-// 6. MÓDULO DE INVENTARIO (CON MAYOREO)
+// 6. MÓDULO DE INVENTARIO (CON MAYOREO Y VISTA PREVIA)
 // ==========================================================================
 function togglePrecioDocenaModal() {
     const selector = document.getElementById('nuevo-prod-hoja').value;
@@ -574,7 +598,8 @@ function cambiarVistaInventario() {
         let imgThumb = `<div class="w-12 h-12 rounded-lg border-2 border-dashed border-[#E8DCC4] flex items-center justify-center text-[10px] text-stone-400 font-bold bg-stone-50">S/F</div>`;
         
         if (rawImagen.startsWith('data:image') || rawImagen.startsWith('http')) {
-            imgThumb = `<div class="w-12 h-12 rounded-lg border-2 border-oro bg-cover bg-center shadow-sm" style="background-image: url('${rawImagen}')"></div>`;
+            // Añado la función onclick para abrir la imagen
+            imgThumb = `<div class="w-12 h-12 rounded-lg border-2 border-oro bg-cover bg-center shadow-sm cursor-pointer hover:opacity-80 transition" style="background-image: url('${rawImagen}')" onclick="abrirImagen(event, '${rawImagen}')"></div>`;
         } else if (rawImagen.startsWith('#')) {
             imgThumb = `<div class="w-12 h-12 rounded-lg border-2 border-[#E8DCC4] shadow-sm" style="background-color: ${rawImagen}"></div>`;
         }
