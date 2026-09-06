@@ -1,0 +1,35 @@
+/* ==========================================================================
+   Estilos Complementarios - Punto de Venta (POS) Venny Flowers
+   ========================================================================== */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #FAF6F0; 
+}
+::-webkit-scrollbar-thumb {
+    background: #E8DCC4; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #C5A059; 
+}
+
+/* Animación para el cambio de pestañas en el POS */
+.pos-seccion {
+    animation: fadeInTab 0.3s ease-out;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ajustes específicos para inputs dentro de la tabla */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

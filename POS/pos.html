@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Punto de Venta | Venny Flowers</title>
+    
+    <!-- Etiquetas PWA / Ícono Embebido -->
+    <meta name="theme-color" content="#FAF6F0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Caja VF">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FAF6F0'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23C5A059'/%3E%3Ctext x='50' y='62' font-family='Georgia, serif' font-size='32' font-weight='bold' fill='%23fff' text-anchor='middle'%3EVF%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FAF6F0'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23C5A059'/%3E%3Ctext x='50' y='62' font-family='Georgia, serif' font-size='32' font-weight='bold' fill='%23fff' text-anchor='middle'%3EVF%3C/text%3E%3C/svg%3E">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="pos.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .text-oro { color: #C5A059; }
+        .bg-oro { background-color: #C5A059; }
+        .border-oro { border-color: #C5A059; }
+        .text-cafe { color: #6B4E31; }
+        .bg-crema { background-color: #FAF6F0; }
+        .bg-rosa-suave { background-color: #F8E5E5; }
+    </style>
+</head>
+<body class="bg-crema text-stone-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-[#E8DCC4] py-4 px-6 shadow-sm sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-full bg-[#FAF6F0] border-2 border-[#E8DCC4] flex items-center justify-center overflow-hidden shadow-sm flex-shrink-0">
+                    <span class="text-xs font-bold font-playfair text-oro">VF</span>
+                </div>
+                <div>
+                    <h1 class="font-playfair text-lg font-bold text-cafe">Venny Flowers</h1>
+                    <span class="text-[10px] uppercase tracking-widest text-emerald-600 font-bold">Caja y Mostrador</span>
+                </div>
+            </div>
+            <button onclick="cargarDatosPOS(true)" class="flex items-center space-x-1 text-xs bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full font-semibold hover:bg-stone-200 transition">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                <span>Sincronizar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Navegación -->
+    <nav class="bg-white border-b border-[#E8DCC4] shadow-xs" aria-label="Secciones">
+        <div class="max-w-6xl mx-auto px-6 flex space-x-6 overflow-x-auto text-sm font-semibold">
+            <button onclick="cambiarTab('caja')" id="tab-caja" class="pos-tab text-oro border-b-2 border-oro py-3 transition whitespace-nowrap">Caja Registradora</button>
+            <button onclick="cambiarTab('inventario')" id="tab-inventario" class="pos-tab text-stone-400 border-b-2 border-transparent py-3 hover:text-cafe transition whitespace-nowrap">Gestión de Catálogo</button>
+        </div>
+    </nav>
+
+    <!-- Loader -->
+    <div id="pos-loader" class="flex-1 flex flex-col items-center justify-center py-20 text-oro">
+        <svg class="animate-spin h-10 w-10 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <p class="font-playfair text-cafe font-semibold text-lg">Conectando al sistema...</p>
+    </div>
+
+    <!-- Contenido Principal -->
+    <main id="pos-content" class="max-w-6xl w-full mx-auto p-4 sm:p-6 flex-1 hidden pb-24">
+        
+        <!-- SECCIÓN 1: CAJA REGISTRADORA -->
+        <section id="seccion-caja" class="pos-seccion space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Formulario de Venta (Grande y claro) -->
+                <div class="bg-white p-6 rounded-2xl border-2 border-oro shadow-md">
+                    <h2 class="font-playfair text-2xl font-bold text-cafe mb-1">Registrar Venta</h2>
+                    <p class="text-sm text-stone-500 mb-6">Ingresa los datos del arreglo vendido en mostrador.</p>
+                    
+                    <form id="form-venta-pos" class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-cafe mb-2 tracking-wider">Concepto de la Venta</label>
+                            <input type="text" id="venta-concepto" placeholder="Ej. Ramo buchón 50 rosas + Corona" required class="w-full bg-stone-50 border-2 border-[#E8DCC4] rounded-xl p-4 text-base focus:outline-none focus:border-oro transition">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-cafe mb-2 tracking-wider">Total Cobrado ($)</label>
+                                <input type="number" id="venta-monto" placeholder="0.00" required min="1" step="0.5" class="w-full bg-stone-50 border-2 border-[#E8DCC4] rounded-xl p-4 text-xl font-bold text-emerald-600 focus:outline-none focus:border-oro transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-cafe mb-2 tracking-wider">Método de Pago</label>
+                                <select id="venta-metodo" class="w-full bg-stone-50 border-2 border-[#E8DCC4] rounded-xl p-4 text-base focus:outline-none focus:border-oro transition">
+                                    <option value="Efectivo">💵 Efectivo</option>
+                                    <option value="Transferencia">📱 Transferencia</option>
+                                    <option value="Tarjeta">💳 Tarjeta</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" id="btn-guardar-venta" class="w-full bg-oro text-white py-4 rounded-xl font-bold text-lg mt-4 hover:bg-[#b58f4a] shadow-lg transition transform hover:-translate-y-0.5">
+                            Confirmar y Cobrar
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Historial Rápido (Solo ventas del día) -->
+                <div class="bg-white p-6 rounded-2xl border border-[#E8DCC4] shadow-sm flex flex-col">
+                    <h3 class="font-playfair text-lg font-bold text-cafe mb-4 border-b border-[#E8DCC4] pb-2">Ventas Recientes (Hoy)</h3>
+                    <div class="flex-1 overflow-y-auto max-h-[350px] pr-2" id="lista-ventas-hoy">
+                        <!-- Se llena con JS -->
+                        <p class="text-sm text-stone-400 italic text-center mt-10">Las ventas del día aparecerán aquí...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: INVENTARIO (Copia exacta del Admin) -->
+        <section id="seccion-inventario" class="pos-seccion hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                <div>
+                    <h2 class="font-playfair text-xl font-bold text-cafe">Catálogo y Existencias</h2>
+                    <p class="text-xs text-stone-500">Actualiza precios, disponibilidad y agrega nuevos insumos.</p>
+                </div>
+                <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                    <button onclick="abrirModalProducto()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-xs hover:bg-emerald-700 transition">+ Nuevo Insumo</button>
+                    <select id="selector-hoja-inv" onchange="cambiarVistaInventario()" class="bg-white border border-[#E8DCC4] rounded-xl px-3 py-2 text-sm text-cafe focus:outline-none focus:border-oro shadow-xs font-semibold">
+                        <option value="Inventario_Flores">Flores</option>
+                        <option value="Inventario_Bases">Bases</option>
+                        <option value="Inventario_Papeles">Papeles</option>
+                        <option value="Inventario_Extras">Extras</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl border border-[#E8DCC4] shadow-sm overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[900px]">
+                    <thead>
+                        <tr class="bg-crema border-b border-[#E8DCC4] text-xs text-cafe uppercase tracking-wider">
+                            <th class="p-4 font-bold">Foto</th>
+                            <th class="p-4 font-bold">ID & Nombre</th>
+                            <th class="p-4 font-bold">Precio Unit.</th>
+                            <th class="p-4 font-bold transition-all" id="col-precio-docena">Precio Doc.</th>
+                            <th class="p-4 font-bold">Cambiar Imagen</th>
+                            <th class="p-4 font-bold text-center">En Stock</th>
+                            <th class="p-4 font-bold text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-inventario-body" class="text-sm text-stone-700 divide-y divide-[#E8DCC4]"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Nuevo Producto (Mismo que el admin) -->
+    <div id="modal-producto" class="fixed inset-0 bg-stone-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="modal-producto-content">
+            <div class="p-5 border-b border-[#E8DCC4] flex justify-between items-center bg-crema">
+                <h3 class="font-playfair text-lg font-bold text-cafe">Registrar Insumo</h3>
+                <button onclick="cerrarModalProducto()" class="text-stone-400 hover:text-rose-600 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form id="form-nuevo-producto" class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-cafe mb-1">Categoría</label>
+                    <select id="nuevo-prod-hoja" onchange="togglePrecioDocenaModal()" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition">
+                        <option value="Inventario_Flores">Flores</option>
+                        <option value="Inventario_Bases">Bases</option>
+                        <option value="Inventario_Papeles">Papeles</option>
+                        <option value="Inventario_Extras">Extras</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-cafe mb-1">Nombre Comercial</label>
+                    <input type="text" id="nuevo-prod-nombre" required class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-cafe mb-1">Fotografía</label>
+                    <input type="file" id="nuevo-prod-imagen" accept="image/*" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-2 text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-oro file:text-white hover:file:bg-[#b58f4a]">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-cafe mb-1">Precio Unitario</label>
+                        <input type="number" id="nuevo-prod-precio" required min="0" step="0.5" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition">
+                    </div>
+                    <div id="caja-docena">
+                        <label class="block text-xs font-semibold uppercase text-cafe mb-1">Precio Docena</label>
+                        <input type="number" id="nuevo-prod-docena" min="0" step="0.5" class="w-full bg-stone-50 border border-emerald-200 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-cafe mb-1">Disponible</label>
+                        <select id="nuevo-prod-disp" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition">
+                            <option value="SI">Sí</option>
+                            <option value="NO">No</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" id="btn-guardar-prod" class="w-full bg-oro text-white py-3 rounded-xl font-bold mt-2 hover:bg-[#b58f4a] shadow-md transition">Guardar en Sistema</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contenedor de Notificaciones -->
+    <div id="notificaciones-container" class="fixed top-20 right-5 z-50 flex flex-col space-y-3 pointer-events-none w-80"></div>
+    
+    <script src="pos.js"></script>
+</body>
+</html>

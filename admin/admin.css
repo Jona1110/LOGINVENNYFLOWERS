@@ -1,0 +1,37 @@
+/* ==========================================================================
+   Estilos Complementarios - Panel Admin Venny Flowers
+   ========================================================================== */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #FAF6F0; 
+}
+::-webkit-scrollbar-thumb {
+    background: #E8DCC4; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #C5A059; 
+}
+
+/* Animación para el cambio de pestañas */
+.admin-seccion {
+    animation: fadeInTab 0.3s ease-out;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Switches para el inventario (Toggle) */
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #C5A059;
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #C5A059;
+}

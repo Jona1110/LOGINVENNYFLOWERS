@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin | Venny Flowers</title>
+    
+    <!-- Etiquetas PWA / Ícono Embebido sin manifest.json -->
+    <meta name="theme-color" content="#FAF6F0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Admin VF">
+    
+    <!-- Ícono SVG embebido en Base64 (Generado con los colores de Venny Flowers) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FAF6F0'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23C5A059'/%3E%3Ctext x='50' y='62' font-family='Georgia, serif' font-size='32' font-weight='bold' fill='%23fff' text-anchor='middle'%3EVF%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FAF6F0'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23C5A059'/%3E%3Ctext x='50' y='62' font-family='Georgia, serif' font-size='32' font-weight='bold' fill='%23fff' text-anchor='middle'%3EVF%3C/text%3E%3C/svg%3E">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .text-oro { color: #C5A059; }
+        .bg-oro { background-color: #C5A059; }
+        .border-oro { border-color: #C5A059; }
+        .text-cafe { color: #6B4E31; }
+        .bg-crema { background-color: #FAF6F0; }
+        .bg-rosa-suave { background-color: #F8E5E5; }
+    </style>
+</head>
+<body class="bg-crema text-stone-800 antialiased min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-[#E8DCC4] py-4 px-6 shadow-sm sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-full bg-[#FAF6F0] border-2 border-[#E8DCC4] flex items-center justify-center overflow-hidden shadow-sm flex-shrink-0">
+                    <img src="image.png" alt="Venny Flowers" class="w-full h-full object-cover" onerror="this.replaceWith(Object.assign(document.createElement('span'), {className: 'text-xs font-bold font-playfair text-oro', textContent: 'VF'}))">
+                </div>
+                <div>
+                    <h1 class="font-playfair text-lg font-bold text-cafe">Venny Flowers</h1>
+                    <span class="text-[10px] uppercase tracking-widest text-oro font-semibold">Backoffice Digitality</span>
+                </div>
+            </div>
+            <button onclick="cargarDatosAdmin(true)" class="flex items-center space-x-1 text-xs bg-rosa-suave text-cafe px-3 py-1.5 rounded-full font-semibold hover:bg-[#E8DCC4] transition">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                <span>Actualizar</span>
+            </button>
+        </div>
+    </header>
+
+    <nav class="bg-white border-b border-[#E8DCC4] shadow-xs" aria-label="Secciones">
+        <div class="max-w-6xl mx-auto px-6 flex space-x-6 overflow-x-auto text-sm font-semibold">
+            <button onclick="cambiarTab('dashboard')" id="tab-dashboard" class="admin-tab text-oro border-b-2 border-oro py-3 transition whitespace-nowrap">Dashboard</button>
+            <button onclick="cambiarTab('pedidos')" id="tab-pedidos" class="admin-tab text-stone-400 border-b-2 border-transparent py-3 hover:text-cafe transition whitespace-nowrap">Pedidos & Entregas</button>
+            <button onclick="cambiarTab('inventario')" id="tab-inventario" class="admin-tab text-stone-400 border-b-2 border-transparent py-3 hover:text-cafe transition whitespace-nowrap">Catálogo</button>
+            <button onclick="cambiarTab('finanzas')" id="tab-finanzas" class="admin-tab text-stone-400 border-b-2 border-transparent py-3 hover:text-cafe transition whitespace-nowrap">Caja Física</button>
+            <button onclick="cambiarTab('scrap')" id="tab-scrap" class="admin-tab text-stone-400 border-b-2 border-transparent py-3 hover:text-cafe transition whitespace-nowrap">Merma (Scrap)</button>
+        </div>
+    </nav>
+
+    <div id="admin-loader" class="flex-1 flex flex-col items-center justify-center py-20 text-oro">
+        <svg class="animate-spin h-10 w-10 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <p class="font-playfair text-cafe font-semibold text-lg">Cargando datos...</p>
+    </div>
+
+    <main id="admin-content" class="max-w-6xl w-full mx-auto p-4 sm:p-6 flex-1 hidden pb-24">
+        
+        <!-- DASHBOARD -->
+        <section id="seccion-dashboard" class="admin-seccion space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl border-2 border-[#E8DCC4] shadow-sm">
+                    <span class="text-xs text-stone-400 uppercase font-bold tracking-wider">Pedidos (Hoy)</span>
+                    <h3 class="text-3xl font-bold font-playfair text-cafe mt-1" id="dash-pedidos">0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border-2 border-oro shadow-md bg-rosa-suave/20">
+                    <span class="text-xs text-cafe uppercase font-bold tracking-wider">Ventas de Hoy</span>
+                    <h3 class="text-3xl font-bold font-playfair text-oro mt-1" id="dash-ingresos">$0.00</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border-2 border-[#E8DCC4] shadow-sm">
+                    <span class="text-xs text-stone-400 uppercase font-bold tracking-wider">Insumos Agotados</span>
+                    <h3 class="text-3xl font-bold font-playfair text-rose-600 mt-1" id="dash-alertas">0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border-2 border-rose-200 shadow-sm bg-rose-50">
+                    <span class="text-xs text-rose-800 uppercase font-bold tracking-wider">Costo Merma (Mes)</span>
+                    <h3 class="text-3xl font-bold font-playfair text-rose-700 mt-1" id="dash-scrap-perdida">$0.00</h3>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-2xl border border-[#E8DCC4] shadow-sm lg:col-span-2">
+                    <h3 class="text-sm font-bold text-cafe uppercase tracking-wider mb-4">Ingresos (Últimos 7 días)</h3>
+                    <div class="relative h-64 w-full"><canvas id="graficaIngresos"></canvas></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-[#E8DCC4] shadow-sm">
+                    <h3 class="text-sm font-bold text-cafe uppercase tracking-wider mb-4">Estatus de Pedidos</h3>
+                    <div class="relative h-64 w-full flex justify-center"><canvas id="graficaEstatus"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PEDIDOS -->
+        <section id="seccion-pedidos" class="admin-seccion hidden space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                <h2 class="font-playfair text-xl font-bold text-cafe">Gestión de Pedidos</h2>
+                <div class="flex space-x-1 bg-[#E8DCC4]/30 p-1 rounded-xl">
+                    <button id="btn-vista-lista" onclick="cambiarVistaPedidos('lista')" class="px-4 py-1.5 text-sm font-semibold rounded-lg bg-white shadow-sm text-oro transition">Lista</button>
+                    <button id="btn-vista-calendario" onclick="cambiarVistaPedidos('calendario')" class="px-4 py-1.5 text-sm font-semibold rounded-lg text-stone-500 hover:text-cafe transition">Calendario</button>
+                </div>
+            </div>
+            <div id="vista-lista-pedidos" class="bg-white rounded-2xl border border-[#E8DCC4] shadow-sm overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+                    <thead><tr class="bg-crema border-b border-[#E8DCC4] text-xs text-cafe uppercase tracking-wider"><th class="p-4 font-bold">ID / Creado</th><th class="p-4 font-bold">Cliente</th><th class="p-4 font-bold">Entrega</th><th class="p-4 font-bold">Detalles</th><th class="p-4 font-bold">Estatus</th></tr></thead>
+                    <tbody id="tabla-pedidos-body" class="text-sm text-stone-700 divide-y divide-[#E8DCC4]"></tbody>
+                </table>
+            </div>
+            <div id="vista-calendario-pedidos" class="hidden bg-white rounded-2xl border border-[#E8DCC4] shadow-sm p-4 sm:p-6">
+                <!-- Estructura del calendario intacta -->
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="cambiarMesCalendario(-1)" class="p-2 bg-stone-50 border border-[#E8DCC4] hover:bg-[#E8DCC4] rounded-full transition text-cafe"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
+                    <h3 id="calendario-mes-anio" class="font-bold text-xl text-cafe font-playfair capitalize">Mes Año</h3>
+                    <button onclick="cambiarMesCalendario(1)" class="p-2 bg-stone-50 border border-[#E8DCC4] hover:bg-[#E8DCC4] rounded-full transition text-cafe"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
+                </div>
+                <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-stone-400 mb-2 uppercase tracking-wider"><div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div></div>
+                <div id="calendario-dias" class="grid grid-cols-7 gap-1 sm:gap-2"></div>
+                <div id="calendario-detalles" class="mt-6 border-t border-[#E8DCC4] pt-5 hidden">
+                    <h4 class="font-bold text-cafe mb-3 flex items-center space-x-2"><svg class="w-5 h-5 text-oro" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span id="calendario-fecha-seleccionada">Entregas</span></h4>
+                    <div id="calendario-lista-entregas" class="space-y-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INVENTARIO -->
+        <section id="seccion-inventario" class="admin-seccion hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                <div><h2 class="font-playfair text-xl font-bold text-cafe">Catálogo</h2><p class="text-xs text-stone-500">Administra precios (incluyendo mayoreo para flores).</p></div>
+                <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                    <button onclick="abrirModalProducto()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-xs hover:bg-emerald-700 transition">+ Nuevo</button>
+                    <select id="selector-hoja-inv" onchange="cambiarVistaInventario()" class="bg-white border border-[#E8DCC4] rounded-xl px-3 py-2 text-sm text-cafe focus:outline-none focus:border-oro shadow-xs font-semibold">
+                        <option value="Inventario_Flores">Flores</option>
+                        <option value="Inventario_Bases">Bases</option>
+                        <option value="Inventario_Papeles">Papeles</option>
+                        <option value="Inventario_Extras">Extras</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#E8DCC4] shadow-sm overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[900px]">
+                    <thead>
+                        <tr class="bg-crema border-b border-[#E8DCC4] text-xs text-cafe uppercase tracking-wider">
+                            <th class="p-4 font-bold">Foto</th><th class="p-4 font-bold">ID & Nombre</th>
+                            <th class="p-4 font-bold">Precio Unit.</th>
+                            <th class="p-4 font-bold transition-all" id="col-precio-docena">Precio Doc.</th>
+                            <th class="p-4 font-bold">Cambiar Imagen</th><th class="p-4 font-bold text-center">Stock</th><th class="p-4 font-bold text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-inventario-body" class="text-sm text-stone-700 divide-y divide-[#E8DCC4]"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- FINANZAS -->
+        <section id="seccion-finanzas" class="admin-seccion hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                <h2 class="font-playfair text-xl font-bold text-cafe">Caja Fuerte y Mostrador</h2>
+                <button onclick="abrirModalVenta()" class="bg-oro text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md hover:bg-[#b58f4a] transition w-full sm:w-auto text-center">+ Registrar Venta Física</button>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#E8DCC4] shadow-sm overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead><tr class="bg-crema border-b border-[#E8DCC4] text-xs text-cafe uppercase tracking-wider"><th class="p-4 font-bold">Fecha</th><th class="p-4 font-bold">Concepto</th><th class="p-4 font-bold">Método</th><th class="p-4 font-bold text-right">Monto</th></tr></thead>
+                    <tbody id="tabla-finanzas-body" class="text-sm text-stone-700 divide-y divide-[#E8DCC4]"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SCRAP (MERMA) -->
+        <section id="seccion-scrap" class="admin-seccion hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                <div>
+                    <h2 class="font-playfair text-xl font-bold text-rose-800">Control de Merma (Scrap)</h2>
+                    <p class="text-xs text-stone-500">Registra flores dañadas o material desperdiciado.</p>
+                </div>
+                <button onclick="abrirModalScrap()" class="bg-rose-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md hover:bg-rose-700 transition w-full sm:w-auto text-center">+ Registrar Pérdida</button>
+            </div>
+            <div class="bg-white rounded-2xl border border-rose-200 shadow-sm overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead><tr class="bg-rose-50 border-b border-rose-200 text-xs text-rose-800 uppercase tracking-wider"><th class="p-4 font-bold">Fecha</th><th class="p-4 font-bold">Producto</th><th class="p-4 font-bold text-center">Cant.</th><th class="p-4 font-bold">Motivo</th><th class="p-4 font-bold text-right">Costo Perdido</th></tr></thead>
+                    <tbody id="tabla-scrap-body" class="text-sm text-stone-700 divide-y divide-rose-100"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Venta Mostrador -->
+    <div id="modal-venta" class="fixed inset-0 bg-stone-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="modal-content"><div class="p-5 border-b border-[#E8DCC4] flex justify-between items-center bg-crema"><h3 class="font-playfair text-lg font-bold text-cafe">Nueva Venta</h3><button onclick="cerrarModalVenta()" class="text-stone-400 hover:text-rose-600 transition"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="form-venta" class="p-5 space-y-4"><div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Concepto</label><input type="text" id="venta-concepto" required class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition"></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Monto ($)</label><input type="number" id="venta-monto" required min="1" step="0.5" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition"></div><div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Método</label><select id="venta-metodo" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition"><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option><option value="Tarjeta">Tarjeta</option></select></div></div><button type="submit" id="btn-guardar-venta" class="w-full bg-oro text-white py-3 rounded-xl font-bold mt-2 hover:bg-[#b58f4a] shadow-md transition">Guardar Venta</button></form></div>
+    </div>
+
+    <!-- Modal Scrap (NUEVO) -->
+    <div id="modal-scrap" class="fixed inset-0 bg-stone-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="modal-scrap-content">
+            <div class="p-5 border-b border-rose-200 flex justify-between items-center bg-rose-50"><h3 class="font-playfair text-lg font-bold text-rose-800">Registrar Merma</h3><button onclick="cerrarModalScrap()" class="text-stone-400 hover:text-rose-600 transition"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
+            <form id="form-scrap" class="p-5 space-y-4">
+                <div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Insumo dañado</label><input type="text" id="scrap-producto" placeholder="Ej. Rosas rojas marchitas" required class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-rose-400 transition"></div>
+                <div class="grid grid-cols-2 gap-4"><div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Cantidad</label><input type="number" id="scrap-cantidad" required min="1" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-rose-400 transition"></div><div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Pérdida ($)</label><input type="number" id="scrap-perdida" required min="0" step="0.5" placeholder="Costo absorbido" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-rose-400 transition"></div></div>
+                <div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Motivo / Causa</label><input type="text" id="scrap-motivo" required placeholder="Ej. Quebrado en traslado" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-rose-400 transition"></div>
+                <button type="submit" id="btn-guardar-scrap" class="w-full bg-rose-600 text-white py-3 rounded-xl font-bold mt-2 hover:bg-rose-700 shadow-md transition">Guardar Registro</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Producto -->
+    <div id="modal-producto" class="fixed inset-0 bg-stone-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="modal-producto-content">
+            <div class="p-5 border-b border-[#E8DCC4] flex justify-between items-center bg-crema"><h3 class="font-playfair text-lg font-bold text-cafe">Nuevo Producto</h3><button onclick="cerrarModalProducto()" class="text-stone-400 hover:text-rose-600 transition"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
+            <form id="form-nuevo-producto" class="p-5 space-y-4">
+                <div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Categoría</label><select id="nuevo-prod-hoja" onchange="togglePrecioDocenaModal()" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition"><option value="Inventario_Flores">Flores</option><option value="Inventario_Bases">Bases</option><option value="Inventario_Papeles">Papeles</option><option value="Inventario_Extras">Extras</option></select></div>
+                <div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Nombre</label><input type="text" id="nuevo-prod-nombre" required class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition"></div>
+                <div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Fotografía</label><input type="file" id="nuevo-prod-imagen" accept="image/*" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-2 text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-oro file:text-white hover:file:bg-[#b58f4a]"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Precio Unitario</label><input type="number" id="nuevo-prod-precio" required min="0" step="0.5" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition"></div>
+                    <div id="caja-docena"><label class="block text-xs font-semibold uppercase text-cafe mb-1">Precio Docena</label><input type="number" id="nuevo-prod-docena" min="0" step="0.5" class="w-full bg-stone-50 border border-emerald-200 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 transition"></div>
+                    <div><label class="block text-xs font-semibold uppercase text-cafe mb-1">Disponible</label><select id="nuevo-prod-disp" class="w-full bg-stone-50 border border-[#E8DCC4] rounded-xl p-3 text-sm focus:outline-none focus:border-oro transition"><option value="SI">Sí</option><option value="NO">No</option></select></div>
+                </div>
+                <button type="submit" id="btn-guardar-prod" class="w-full bg-oro text-white py-3 rounded-xl font-bold mt-2 hover:bg-[#b58f4a] shadow-md transition">Crear Producto</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="notificaciones-container" class="fixed top-20 right-5 z-50 flex flex-col space-y-3 pointer-events-none w-80"></div>
+    <script src="admin.js"></script>
+</body>
+</html>

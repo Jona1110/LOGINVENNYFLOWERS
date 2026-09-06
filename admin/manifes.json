@@ -1,0 +1,15 @@
+{
+  "name": "Venny Flowers",
+  "short_name": "Venny",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FAF6F0",
+  "theme_color": "#C5A059",
+  "icons": [
+    {
+      "src": "icono.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
