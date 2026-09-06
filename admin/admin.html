@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Admin VF">
     
-    <!-- Ícono SVG embebido en Base64 (Generado con los colores de Venny Flowers) -->
+    <!-- Ícono SVG embebido en Base64 -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FAF6F0'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23C5A059'/%3E%3Ctext x='50' y='62' font-family='Georgia, serif' font-size='32' font-weight='bold' fill='%23fff' text-anchor='middle'%3EVF%3C/text%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FAF6F0'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23C5A059'/%3E%3Ctext x='50' y='62' font-family='Georgia, serif' font-size='32' font-weight='bold' fill='%23fff' text-anchor='middle'%3EVF%3C/text%3E%3C/svg%3E">
     
@@ -31,6 +31,14 @@
     </style>
 </head>
 <body class="bg-crema text-stone-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Modal Vista Previa Imagen -->
+    <div id="modal-imagen" class="hidden fixed inset-0 z-50 bg-stone-900/90 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300" onclick="cerrarImagen()">
+        <button class="absolute top-6 right-6 text-white hover:text-oro transition p-2 bg-stone-800 rounded-full">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <img id="img-ampliada" src="" alt="Vista previa" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl transform scale-95 transition-transform duration-300">
+    </div>
 
     <header class="bg-white border-b border-[#E8DCC4] py-4 px-6 shadow-sm sticky top-0 z-40">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
