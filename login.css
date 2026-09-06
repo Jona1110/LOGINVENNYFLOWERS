@@ -39,3 +39,20 @@ input:-webkit-autofill:active{
     -webkit-text-fill-color: #6B4E31 !important;
     transition: background-color 5000s ease-in-out 0s;
 }
+
+/* ==========================================================================
+   Fuerza visual de selección de Roles (Caja/Admin)
+   ========================================================================== */
+input[type="radio"]:checked + div {
+    border-color: #C5A059 !important;
+    background-color: #F8E5E5 !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+input[type="radio"]:checked + div svg {
+    color: #C5A059 !important;
+}
+
+input[type="radio"]:checked + div span {
+    color: #6B4E31 !important;
+}
